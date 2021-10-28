@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+int add(int first, float second)
+{
+ return first + (int)second;
+}
+
 int main()
 {
  int a = 0;
