@@ -8,7 +8,7 @@ int removeExcess()
 { // to remove spaces, tabs and comments
   FILE *fa, *fb;
   int ca, cb;
-  fa = fopen("getNextToken.c", "r");
+  fa = fopen("input.c", "r");
   if (fa == NULL)
   {
     printf("Cannot open file \n");
@@ -455,9 +455,9 @@ int main()
         data_type_buffer[0] = '\0';
       }
       i = 0;
+      buffer[0] = '\0';
       if (c == '\n')
         row++, col_global = 1;
-      buffer[0] = '\0';
     }
     else if (isdigit(c) != 0)
     {

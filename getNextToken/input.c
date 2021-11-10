@@ -4,31 +4,31 @@
 
 int add(int first, float second)
 {
- return first + (int)second;
+	return first + (int)second;
 }
 
 int main()
 {
- int a = 0;
- double b = 0.0;
- switch (0)
- {
- case 0:
+	int a = 0;
+	double b = 0.0;
+	switch (0)
+	{
+	case 0:
 		break;
- default:
+	default:
 		printf("hello world");
- }
- while (1)
- {
+	}
+	while (1)
+	{
 		printf("hello world this is the second string");
 		continue;
- }
- char ctypee[10];
- if (a == 1)
- {
+	}
+	char ctypee[10];
+	if (a == 1)
+	{
 		return 0;
- }
- else
+	}
+	else
 		return 1;
- return 0;
+	return 0;
 }
