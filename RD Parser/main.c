@@ -1,10 +1,55 @@
-#include "rdParser.h"
+#include "rdParser.h" 
 
 int row, col_global;
 char data_type_buffer[100], c = 0;
 FILE *finp;
 Token tkn = NULL;
 int prev_flag = false;
+
+enum NON_TERMINALS { // types for non terminals.
+	PROGRAM,
+	DECLARATIONS,
+	ASSIGNSTAT,
+	ASSIGNSTATPRIME,
+	IDENTIFIERLIST,
+	IDENTIFIERLISTPRIME
+};
+
+char first[][4][20] = {{"int"}, {"int", "char", "double", "float"}, {"id"}, {"id", "num"}, {"id"}, {","}};
+char follow[][2][20] = {{"$"}, {"id"}, {"id", "num"}, {"return"}, {";"}, {";"}};
+
+int firstSz[] = {1, 4, 1, 2, 1, 1};
+int followSz[] = {1, 1, 2, 1, 1, 1};
+
+int search_first(enum NON_TERMINALS val, char* buffer, enum TYPE type){
+	if(type == IDENTIFIER){
+		return search_symbol(buffer) != -1 && search_first(val, "id", KEYWORD);
+	}
+	if(type == NUMERIC_CONSTANT){
+		return search_first(val, "num", KEYWORD);
+	}
+	for(int i = 0; i<firstSz[val]; i++){
+		if(strcmp(buffer, first[val][i]) == 0){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int search_follow(enum NON_TERMINALS val, char* buffer, enum TYPE type){
+	if(type == IDENTIFIER){
+		return search_follow(val, "id", KEYWORD) && search_symbol(buffer) != -1;
+	}
+	if(type == NUMERIC_CONSTANT){
+		return search_follow(val, "num", KEYWORD);
+	}
+	for(int i = 0; i<followSz[val]; i++){
+		if(strcmp(buffer, follow[val][i]) == 0){
+			return 1;
+		}
+	}
+	return 0;
+}
 
 void Program();
 void Declarations();
@@ -57,7 +102,14 @@ int main(int argn, char *args[])
 	}
 	row;
 	col_global = 1;
-	Program();
+	get();
+	prev_flag = true;
+	if(search_first(PROGRAM, tkn->lexeme, tkn->type) == 1){
+		Program();
+	}
+	else{
+		failure("No Return type found!");
+	}
 	printf("\nSymbol Table : \n\n");
 	display_st();
 	printf("\n");
@@ -81,16 +133,48 @@ void Program()
 					get();
 					if (strcmp(tkn->lexeme, "{") == 0)
 					{
-						Declarations();
-						AssignStat();
 						get();
-						if (strcmp(tkn->lexeme, "}") == 0)
+						if(search_first(DECLARATIONS, tkn->lexeme, tkn->type) == 1){
+							prev_flag = true;
+							Declarations();							
+						}
+						else{
+							failure("Data Type expected!");
+						}
+						get();
+						if(search_first(ASSIGNSTAT, tkn->lexeme, tkn->type) == 1){
+							prev_flag = true;
+							AssignStat();
+						}
+						else{
+							failure("Invalid Identifier!");
+						}
+						get();
+						if (strcmp(tkn->lexeme, "return") == 0)
 						{
-							success();
+							get();
+							if(tkn->type == NUMERIC_CONSTANT){
+								get();
+								if(strcmp(tkn->lexeme, ";") == 0){
+									get();
+									if(strcmp(tkn->lexeme, "}") == 0){
+									success();
+									}
+									else{
+										failure("No closing curly braces found!");
+									}
+								}
+								else{
+									failure("No Semi-Colon found!");
+								}
+							}
+							else{
+								failure("Numeric Value Expected!");
+							}
 						}
 						else
 						{
-							failure("No closing curly bracket found!");
+							failure("No return statement found!");
 						}
 					}
 					else
@@ -124,11 +208,25 @@ void Declarations()
 	get();
 	if (isdatatype(tkn->lexeme))
 	{
-		Identifier();
+		get();
+		if(search_first(IDENTIFIERLIST, tkn->lexeme, tkn->type) == 1){
+			prev_flag = true;
+			Identifier();
+		}
+		else{
+			failure("Identifier expected!");
+		}
 		get();
 		if (strcmp(tkn->lexeme, ";") == 0)
 		{
-			Declarations();
+			get();
+			prev_flag = true;
+			if(search_first(DECLARATIONS, tkn->lexeme, tkn->type) == 1){
+				Declarations();
+			}
+			else if(search_follow(DECLARATIONS, tkn->lexeme, tkn->type) == 0){
+				failure("Invalid Identifier");
+			}
 		}
 		else
 		{
@@ -155,7 +253,14 @@ void Identifier()
 	get();
 	if (search_symbol(tkn->lexeme) != -1)
 	{
-		IdentifierPrime();
+		get();
+		prev_flag = true;
+		if(search_first(IDENTIFIERLISTPRIME, tkn->lexeme, tkn->type) == 1){
+			IdentifierPrime();
+		}
+		else if(search_follow(IDENTIFIERLISTPRIME, tkn->lexeme, tkn->type) == 0){
+			failure(", or ; expected");
+		}
 	}
 	else
 	{
@@ -168,7 +273,14 @@ void IdentifierPrime()
 	get();
 	if (strcmp(tkn->lexeme, ",") == 0)
 	{
-		Identifier();
+		get();
+		if(search_first(IDENTIFIERLIST, tkn->lexeme, tkn->type) == 1){
+			prev_flag = true;
+			Identifier();
+		}
+		else{
+			failure("Invalid Identifier!");
+		}
 	}
 	else
 	{
@@ -184,7 +296,14 @@ void AssignStat()
 		get();
 		if (strcmp(tkn->lexeme, "=") == 0)
 		{
-			AssignStatPrime();
+			get();
+			if(search_first(ASSIGNSTATPRIME, tkn->lexeme, tkn->type) == 1){
+				prev_flag = true;
+				AssignStatPrime();
+			}
+			else{
+				failure("Invalid Identifier or numeric value expected!");
+			}
 		}
 		else
 		{
@@ -193,7 +312,7 @@ void AssignStat()
 	}
 	else
 	{
-		prev_flag = true;
+		failure("Invalid Identifier!");
 	}
 }
 
@@ -207,10 +326,6 @@ void AssignStatPrime()
 		{
 			failure("Semi-Colon Expected!");
 		}
-		else
-		{
-			AssignStat();
-		}
 	}
 	else if (tkn->type == NUMERIC_CONSTANT)
 	{
@@ -218,10 +333,6 @@ void AssignStatPrime()
 		if (strcmp(tkn->lexeme, ";") != 0)
 		{
 			failure("Semi-Colon Expected!");
-		}
-		else
-		{
-			AssignStat();
 		}
 	}
 	else
@@ -232,11 +343,11 @@ void AssignStatPrime()
 
 void failure(char *msg)
 {
-	printf("***NOT ACCEPTED***\n%s Row : %d, Col : %d\n", msg, tkn->row, tkn->col);
+	printf("\n***NOT ACCEPTED***\n%s Row : %d, Col : %d\n", msg, tkn->row, tkn->col);
 	exit(0);
 }
 
 void success()
 {
-	printf("###ACCEPTED###\n");
+	printf("\n###ACCEPTED###\n");
 }

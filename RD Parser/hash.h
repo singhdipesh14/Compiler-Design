@@ -7,7 +7,7 @@ int hash(int size) // hashing function
 
 void display_st() // display the symbol table
 {
-	printf("      Name    |      Type    |      Size    |       Row    |       Col\n");
+	printf("      Name    |      Type    |      Size     |     Row     |     Col     \n");
 	printf("-------------------------------------------------------------------------\n");
 	for (int i = 0; i < MAX_SIZE; i++)
 	{

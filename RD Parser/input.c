@@ -4,9 +4,8 @@
 int main()
 {
 	float a, b;
+	char c;
 	int first, second;
 	a = b;
-	first = second;
-	a = 5.32;
-	second = 1000;
+	return 0;
 }
