@@ -5,7 +5,7 @@ void DataType()
 	get();
 	if (isdatatype(tkn->lexeme) == 0)
 	{
-		failure("Data Type Expected!");
+		failure("Data Type Expected! : Data_Type.");
 	}
 }
 #endif

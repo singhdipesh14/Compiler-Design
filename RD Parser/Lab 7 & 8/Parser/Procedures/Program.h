@@ -23,78 +23,78 @@ void Program()
 						{
 							prev_flag = true;
 							Declarations();
-						}
-						else
-						{
-							failure("Data Type expected!");
-						}
-						get();
-						if (search_first(STATEMENT_LIST, tkn->lexeme, tkn->type) == 1)
-						{ // CHANGE
-							prev_flag = true;
-							Statement_List();
-						}
-						else
-						{
-							failure("Invalid Identifier!");
-						}
-						get();
-						if (strcmp(tkn->lexeme, "return") == 0)
-						{
 							get();
-							if (tkn->type == NUMERIC_CONSTANT)
+							if (search_first(STATEMENT_LIST, tkn->lexeme, tkn->type) == 1)
 							{
+								prev_flag = true;
+								Statement_List();
 								get();
-								if (strcmp(tkn->lexeme, ";") == 0)
+								if (strcmp(tkn->lexeme, "return") == 0)
 								{
 									get();
-									if (strcmp(tkn->lexeme, "}") == 0)
+									if (tkn->type == NUMERIC_CONSTANT)
 									{
-										success();
+										get();
+										if (strcmp(tkn->lexeme, ";") == 0)
+										{
+											get();
+											if (strcmp(tkn->lexeme, "}") == 0)
+											{
+												success();
+											}
+											else
+											{
+												failure("No closing curly braces found! : Program.");
+											}
+										}
+										else
+										{
+											failure("No Semi-Colon found! : Program.");
+										}
 									}
 									else
 									{
-										failure("No closing curly braces found!");
+										failure("Numeric Value Expected! : Program.");
 									}
 								}
 								else
 								{
-									failure("No Semi-Colon found!");
+									failure("No return statement found! : Program.");
 								}
 							}
 							else
 							{
-								failure("Numeric Value Expected!");
+								failure("Invalid Identifier! : Program.");
 							}
 						}
 						else
 						{
-							failure("No return statement found!");
+							failure("Data Type expected! : Program.");
 						}
 					}
 					else
 					{
-						failure("No starting curly bracket found!");
+						failure("No starting curly bracket found! : Program.");
 					}
 				}
 				else
 				{
-					failure("No function closing parentheses found!");
+					failure("No function closing parentheses found! : Program.");
 				}
 			}
 			else
 			{
-				failure("No function starting parentheses found!");
+				failure("No function starting parentheses found! : Program.");
 			}
 		}
 		else
 		{
-			failure("No main found!");
+			failure("No main found! : Program.");
 		}
 	}
 	else
 	{
-		failure("No return type found!");
+		failure("No return type found! : Program.");
 	}
 }
 

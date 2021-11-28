@@ -18,6 +18,7 @@ void get()
     {
         failure("End of file encountered!");
     }
+    // prev_flag ?: printf("token : %s\n", tkn->lexeme);
     prev_flag = false;
 }
 

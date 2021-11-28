@@ -9,7 +9,7 @@ void Relop()
 	}
 	else
 	{
-		failure("fail");
+		failure("Invalid Operator! : Operators.");
 	}
 }
 
@@ -22,7 +22,7 @@ void Addop()
 	}
 	else
 	{
-		failure("fail");
+		failure("Invalid Operator! : Operators.");
 	}
 }
 
@@ -35,7 +35,7 @@ void Mulop()
 	}
 	else
 	{
-		failure("fail");
+		failure("Invalid Operator! : Operators.");
 	}
 }
 #endif

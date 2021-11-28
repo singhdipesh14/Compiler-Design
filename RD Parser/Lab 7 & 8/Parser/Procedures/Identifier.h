@@ -11,14 +11,14 @@ void Identifier()
 		{
 			IdentifierPrime();
 		}
-		else if (search_follow(IDENTIFIERLISTPRIME, tkn->lexeme, tkn->type) == 0)
-		{ // change
-			failure(", or ; expected");
+		else if (search_follow(IDENTIFIERLIST, tkn->lexeme, tkn->type) != 1)
+		{
+			failure("; expected! : Identifier.");
 		}
 	}
 	else
 	{
-		failure("Invalid Identifier!");
+		failure("Invalid Identifier! : Identifier.");
 	}
 }
 
@@ -35,32 +35,41 @@ void IdentifierPrime()
 		}
 		else if (strcmp(tkn->lexeme, "[") == 0)
 		{
+		}
+		else
+		{
+			failure("Invalid Identifier! : Identifier`.");
+		}
+	}
+	else if (strcmp(tkn->lexeme, "[") == 0)
+	{
+		get();
+		if (tkn->type == NUMERIC_CONSTANT)
+		{
 			get();
-			if (tkn->type == NUMERIC_CONSTANT)
+			if (strcmp(tkn->lexeme, "]") == 0)
 			{
-				get();
-				if (strcmp(tkn->lexeme, "]") == 0)
-				{
+				if (search_first(IDENTIFIERLISTPRIMEPRIME, tkn->lexeme, tkn->type) == 1)
 					IdentifierPrimePrime();
-				}
-				else
-				{
-					failure("fail");
-				}
 			}
 			else
 			{
-				failure("fail");
+				failure("] expected!  : Identifier`.");
 			}
 		}
 		else
 		{
-			failure("Invalid Identifier!");
+			failure("Number expected!  : Identifier`.");
 		}
 	}
 	else
 	{
-		prev_flag = true;
+		if (search_follow(IDENTIFIERLISTPRIME, tkn->lexeme, tkn->type) == 1)
+			prev_flag = true;
+		else
+		{
+			failure("; expected!  : Identifier`.");
+		}
 	}
 }
 
@@ -69,11 +78,21 @@ void IdentifierPrimePrime()
 	get();
 	if (strcmp(tkn->lexeme, ",") == 0)
 	{
-		Identifier();
+		if (search_first(IDENTIFIERLIST, tkn->lexeme, tkn->type) == 1)
+			Identifier();
+		else
+		{
+			failure("Invalid Identifier!  : Identifier``.");
+		}
 	}
 	else
 	{
-		prev_flag = true;
+		if (search_follow(IDENTIFIERLISTPRIMEPRIME, tkn->lexeme, tkn->type) == 1)
+			prev_flag = true;
+		else
+		{
+			failure("; expected!  : Identifier``.");
+		}
 	}
 }
 #endif

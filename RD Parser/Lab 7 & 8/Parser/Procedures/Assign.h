@@ -8,16 +8,21 @@ void AssignStat()
 		get();
 		if (strcmp(tkn->lexeme, "=") == 0)
 		{
-			Expn();
+			get();
+			prev_flag = true;
+			if (search_first(EXPN, tkn->lexeme, tkn->type) == 1)
+				Expn();
+			else
+				failure("Invalid Identifier or number : Assign.");
 		}
 		else
 		{
-			failure("= sign not found!");
+			failure("= sign not found! : Assign.");
 		}
 	}
 	else
 	{
-		failure("Invalid Identifier!");
+		failure("Invalid Identifier! : Assign.");
 	}
 }
 
