@@ -49,6 +49,8 @@ void IdentifierPrime()
 			get();
 			if (strcmp(tkn->lexeme, "]") == 0)
 			{
+				get();
+				prev_flag = true;
 				if (search_first(IDENTIFIERLISTPRIMEPRIME, tkn->lexeme, tkn->type) == 1)
 					IdentifierPrimePrime();
 			}
@@ -78,6 +80,8 @@ void IdentifierPrimePrime()
 	get();
 	if (strcmp(tkn->lexeme, ",") == 0)
 	{
+		get();
+		prev_flag = true;
 		if (search_first(IDENTIFIERLIST, tkn->lexeme, tkn->type) == 1)
 			Identifier();
 		else
